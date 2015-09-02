@@ -12,8 +12,8 @@ $(document).ready(function() {
       var tile = $('.tile');
       moveTile(tile, openCells, usedCells, event.which);
       event.preventDefault();
+      newTile(openCells, usedCells);
     }
-    // newTile(openCells, usedCells);
   })
 })
 
@@ -45,9 +45,9 @@ function newTile(openCells, usedCells) {
 }
 
 function findIndex(array, element) {
- for (i = 0; i < array.length; i++) {
-   if (array[i][0] == element[0] && array[i][1] == element[1]) {
-     return i;
+ for (k = 0; k < array.length; k++) {
+   if (array[k][0] == element[0] && array[k][1] == element[1]) {
+     return k;
    }
  }
 }
@@ -85,6 +85,7 @@ function emptyCell(openCells, usedCells, cellSpace) {
 //       break;
 //   }
 // }
+
 function moveTile(tile, openCells, usedCells, direction) {
 
   switch(direction) {
@@ -112,13 +113,18 @@ function moveUp(tile, openCells, usedCells, direction) {
         if (openArr[0][0] < usedArr[j][0]) {
           var fullCoord = "r" + openArr[0][0];
           // need to access the particular tile and reassign only that tile
-          $(".tile[data-row='r" + usedArr[j][0] + "']").attr("data-row", fullCoord);
-          openCol.push(usedArr[j]);
-          occupyCell(openCol, usedCol, [fullCoord, openArr[0][1]]);
+          $(".tile[data-row='r" + usedArr[j][0] + "'][data-col='c" + i +"']").attr("data-row", fullCoord);
+          usedArr.push(openArr.shift());
+          openArr.push(usedArr.shift());
+          // add/delete from global variables
+          var indexOpen = findIndex(openCells, [fullCoord, openArr[0][1]])
+          var nowUsed = openCells.splice(indexOpen, 1);
+          usedCells.push(nowUsed[0]);
+          var indexUsed = findIndex(usedCells, usedCol[j]);
+          var nowOpen = usedCells.splice(indexUsed, 1);
+          openCells.push(nowOpen[0]);
         }
       }
-      // add/delete from global variables
-      return openArr, usedArr;
     }
   }
   // all columns have been iterated over - create a new tile??
